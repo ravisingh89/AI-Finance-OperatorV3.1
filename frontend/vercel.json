@@ -5,6 +5,6 @@
   "installCommand": "npm install",
   "regions": ["sin1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url"
+    "NEXT_PUBLIC_API_URL": "https://ai-finance-operatorv3-1.onrender.com"
   }
 }
