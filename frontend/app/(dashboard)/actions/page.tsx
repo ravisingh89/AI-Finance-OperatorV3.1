@@ -30,8 +30,7 @@ export default function ActionsPage() {
   const ga = report.goal_actions;
   if (!ga?.actions?.length) return <EmptyState message="No actions generated. Upload a statement first." />;
 
-  //const actions = ga.actions || [];
-  const ga = (report as any)?.goal_actions;
+  const actions = ga.actions || [];
   const challenge = ga.weekly_challenge;
   const cur = report.summary.currency;
 
