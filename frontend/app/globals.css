@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ── Design tokens ─────────────────────────────────────────────────── */
+:root {
+  --navy:      #0F172A;
+  --navy-2:    #1E293B;
+  --navy-3:    #334155;
+  --emerald:   #10B981;
+  --emerald-d: #059669;
+  --blue:      #3B82F6;
+  --amber:     #F59E0B;
+  --rose:      #F43F5E;
+  --purple:    #8B5CF6;
+  --glass-bg:  rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Glassmorphism ─────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.glass-light {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.9);
+}
+.glass-dark {
+  background: rgba(15,23,42,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ── Gradients ─────────────────────────────────────────────────────── */
+.gradient-emerald  { background: linear-gradient(135deg,#10B981,#059669); }
+.gradient-blue     { background: linear-gradient(135deg,#3B82F6,#1D4ED8); }
+.gradient-amber    { background: linear-gradient(135deg,#F59E0B,#D97706); }
+.gradient-rose     { background: linear-gradient(135deg,#F43F5E,#E11D48); }
+.gradient-purple   { background: linear-gradient(135deg,#8B5CF6,#7C3AED); }
+.gradient-navy     { background: linear-gradient(135deg,#0F172A,#1E293B); }
+.gradient-gold     { background: linear-gradient(135deg,#F59E0B,#EF4444); }
+.gradient-mesh     {
+  background: radial-gradient(at 40% 20%, #10B98122 0px, transparent 50%),
+              radial-gradient(at 80% 0%, #3B82F622 0px, transparent 50%),
+              radial-gradient(at 0% 50%, #8B5CF622 0px, transparent 50%),
+              #0F172A;
+}
+
+/* ── Card styles ───────────────────────────────────────────────────── */
+.card-premium {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-premium:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(15,23,42,0.10);
+}
+.card-dark {
+  background: rgba(30,41,59,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+}
+
+/* ── Score ring animation ──────────────────────────────────────────── */
+@keyframes ring-appear {
+  from { stroke-dashoffset: 999; opacity: 0; }
+  to   { opacity: 1; }
+}
+.score-ring-animated {
+  animation: ring-appear 0.1s ease forwards;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── Number count-up ───────────────────────────────────────────────── */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.count-animate { animation: count-up 0.7s ease-out forwards; }
+
+/* ── Typing dots ───────────────────────────────────────────────────── */
+@keyframes typing {
+  0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+  30%         { transform: translateY(-6px); opacity: 1; }
+}
+.typing-dot { animation: typing 1.2s ease infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.30s; }
+
+/* ── Progress bar ──────────────────────────────────────────────────── */
+.progress-bar-inner {
+  transition: width 1.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── Skeleton loader ───────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position:  1000px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+}
+
+/* ── Chat bubbles ──────────────────────────────────────────────────── */
+.chat-user {
+  background: linear-gradient(135deg,#0F172A,#1E293B);
+  color: white;
+  border-radius: 18px 18px 4px 18px;
+}
+.chat-ai {
+  background: white;
+  border: 1px solid #E2E8F0;
+  color: #374151;
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* ── Heatmap cell ──────────────────────────────────────────────────── */
+.heat-cell {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.heat-cell:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  position: relative;
+}
+
+/* ── Alert card ────────────────────────────────────────────────────── */
+.alert-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.alert-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────── */
+.sidebar-item {
+  transition: all 0.15s ease;
+}
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.08);
+}
+.sidebar-item.active {
+  background: rgba(16,185,129,0.18);
+  border-right: 2px solid #10B981;
+}
+
+/* ── Micro interactions ─────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg,#10B981,#059669);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+.btn-primary:hover  { opacity: 0.92; }
+.btn-primary:active { transform: scale(0.98); }
+
+/* ── Radar chart fix ────────────────────────────────────────────────── */
+.recharts-polar-grid-angle line { stroke: #E2E8F0; }
+.recharts-polar-angle-axis-tick text { font-size: 11px; fill: #94A3B8; }
