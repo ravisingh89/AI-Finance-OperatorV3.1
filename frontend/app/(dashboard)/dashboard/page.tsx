@@ -102,10 +102,14 @@ export default function Dashboard() {
 
   const { summary, category_breakdown={}, health_score, smart_alerts=[], retention } = report;
   const cur      = summary.currency;
-  const hs       = health_score || {};
+  // const hs       = health_score || {};
+  const hs: any = health_score || {};
   const streak   = retention?.streak || {};
+  const smart_alerts = (report as any)?.smart_alerts || [];
+  const health_score = (report as any)?.health_score || {};
   const alerts   = smart_alerts.filter((a:any) => a.severity === "high").slice(0,3);
-  const radarData= hs.radar_data || [];
+  // const radarData= hs.radar_data || [];
+  const radarData = (hs as any)?.radar_data || [];
 
   const pieData = Object.entries(category_breakdown)
     .sort((a,b)=>(b[1] as number)-(a[1] as number)).slice(0,7)
