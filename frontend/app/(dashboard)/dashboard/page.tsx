@@ -104,7 +104,8 @@ export default function Dashboard() {
   const cur      = summary.currency;
   // const hs       = health_score || {};
   const hs: any = health_score || {};
-  const streak   = retention?.streak || {};
+  // const streak   = retention?.streak || {};
+  const streak: any = retention?.streak || {};
   // const smart_alerts = (report as any)?.smart_alerts || [];
   // const health_score = (report as any)?.health_score || {};
   const alerts   = smart_alerts.filter((a:any) => a.severity === "high").slice(0,3);
