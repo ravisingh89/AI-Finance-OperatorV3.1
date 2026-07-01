@@ -1,11 +1,24 @@
 export function LoadingSpinner({ text = "Loading…" }: { text?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center h-64 gap-4">
-      <div className="relative w-12 h-12">
-        <div className="w-12 h-12 rounded-full border-4 border-slate-200"/>
-        <div className="w-12 h-12 rounded-full border-4 border-t-emerald-500 animate-spin absolute inset-0"/>
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", height: "256px", gap: "16px",
+    }}>
+      <div style={{ position: "relative", width: "40px", height: "40px" }}>
+        <div style={{
+          width: "40px", height: "40px", borderRadius: "50%",
+          border: "3px solid #F1F5F9",
+        }}/>
+        <div style={{
+          width: "40px", height: "40px", borderRadius: "50%",
+          border: "3px solid transparent",
+          borderTopColor: "#10B981",
+          position: "absolute", inset: 0,
+          animation: "spin 0.8s linear infinite",
+        }}/>
       </div>
-      <p className="text-slate-500 text-sm">{text}</p>
+      <p style={{ color: "#94A3B8", fontSize: "13px" }}>{text}</p>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

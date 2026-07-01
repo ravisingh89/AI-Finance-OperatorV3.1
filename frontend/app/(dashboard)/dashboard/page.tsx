@@ -3,7 +3,7 @@ import { useReport } from "@/hooks/useReport";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
-         RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer as RC } from "recharts";
+         RadarChart, Radar, PolarGrid, PolarAngleAxis } from "recharts";
 
 const CAT_COLORS = ["#10B981","#3B82F6","#F59E0B","#F43F5E","#8B5CF6","#EC4899","#14B8A6","#F97316"];
 

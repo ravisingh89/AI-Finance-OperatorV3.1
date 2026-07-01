@@ -10,12 +10,22 @@ export function EmptyState({
   showUploadLink = true,
 }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
-      <div className="w-16 h-16 rounded-2xl gradient-navy flex items-center justify-center text-3xl">📁</div>
-      <p className="text-slate-500 max-w-xs text-sm">{message}</p>
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", height: "256px", gap: "16px", textAlign: "center",
+    }}>
+      <div style={{
+        width: "64px", height: "64px", borderRadius: "16px",
+        background: "linear-gradient(135deg,#0F172A,#1E293B)",
+        display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px",
+      }}>📁</div>
+      <p style={{ color: "#64748B", maxWidth: "280px", fontSize: "13px", lineHeight: "1.5" }}>{message}</p>
       {showUploadLink && (
-        <Link href="/upload"
-          className="px-5 py-2.5 gradient-emerald text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity">
+        <Link href="/upload" style={{
+          padding: "10px 22px", background: "linear-gradient(135deg,#10B981,#059669)",
+          color: "white", fontSize: "13px", fontWeight: "600", borderRadius: "12px",
+          textDecoration: "none",
+        }}>
           Upload Statement →
         </Link>
       )}

@@ -3,7 +3,6 @@ import { useReport } from "@/hooks/useReport";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
-import Link from "next/link";
 
 function AnimatedRing({ score, color, size=160 }: { score:number; color:string; size?:number }) {
   const r = size/2-12, cx=size/2, cy=size/2;

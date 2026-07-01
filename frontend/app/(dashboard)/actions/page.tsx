@@ -2,7 +2,6 @@
 import { useReport } from "@/hooks/useReport";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { EmptyState } from "@/components/shared/EmptyState";
-import Link from "next/link";
 import { useState } from "react";
 
 const TF_COLOR: Record<string,string> = {
