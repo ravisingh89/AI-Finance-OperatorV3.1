@@ -282,8 +282,11 @@ export default function Dashboard() {
         }}>
           <div>
             <span style={{fontWeight:"600",color:"#F43F5E",fontSize:"13px"}}>
-              🗑️ {report.waste_items.length} waste items — {formatCurrency(
+              {/* 🗑️ {report.waste_items.length} waste items — {formatCurrency(
                 report.waste_items.reduce((a:number,w:any)=>a+w.monthly_loss,0),cur
+              )}/month leaking */}
+             🗑️ {(report.waste_items || []).length} waste items — {formatCurrency(
+               (report.waste_items || []).reduce((a:number,w:any)=>a + (w.monthly_loss || 0), 0),cur
               )}/month leaking
             </span>
           </div>
