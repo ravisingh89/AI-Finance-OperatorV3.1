@@ -79,7 +79,7 @@ export default function HealthScorePage() {
         </div>
 
         {/* Radar */}
-        {hs.radar_data?.length>0 && (
+        {(hs.radar_data?.length ?? 0)>0 && (
           <div className="card-premium" style={{padding:"20px"}}>
             <h2 style={{fontSize:"13px",fontWeight:"600",color:"#0F172A",marginBottom:"3px"}}>Score radar</h2>
             <p style={{fontSize:"11px",color:"#94A3B8",marginBottom:"10px"}}>All 7 dimensions visualised</p>
@@ -118,7 +118,7 @@ export default function HealthScorePage() {
       </div>
 
       {/* Insights */}
-      {hs.insights?.length>0 && (
+      {(hs.insights?.length ?? 0)>0 && (
         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
           <h2 style={{fontSize:"14px",fontWeight:"600",color:"#0F172A"}}>AI insights</h2>
           {hs.insights.map((ins:any,i:number)=>(
@@ -132,7 +132,7 @@ export default function HealthScorePage() {
       )}
 
       {/* Improvement suggestions */}
-      {hs.suggestions?.length>0 && (
+      {(hs.suggestions?.length ?? 0)>0 && (
         <div className="card-premium" style={{padding:"20px"}}>
           <h2 style={{fontSize:"14px",fontWeight:"600",color:"#0F172A",marginBottom:"14px"}}>Top improvements</h2>
           {hs.suggestions.map((s:any,i:number)=>(
