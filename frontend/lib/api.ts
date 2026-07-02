@@ -287,7 +287,7 @@ export interface HealthScore {
   //   label: string;
   //   icon?: string;
   // }>;
-  overall_score?: number;
+    overall_score?: number;
   grade?: string;
   label?: string;
   color?: string;
@@ -302,30 +302,37 @@ export interface HealthScore {
     discipline?: number;
   };
 
+  // Phase 3 radar chart
   radar_data?: Array<{
     subject: string;
     score: number;
+    full?: number;
   }>;
+
+  metrics?: {
+    income?: number;
+    spend?: number;
+  };
 
   insights?: string[];
   recommendations?: string[];
- }
-  
-  // Phase 3: radar chart data
-  radar_data?: Array<{ subject: string; score: number; full: number }>;
-  metrics: {
-    income: number;
-    spend: number;
-    savings: number;
-    savings_rate: number;
-    debt_ratio: number;
-    spending_ratio: number;
-    investment_ratio?: number;
-  };
-  insights: Array<{ type: string; msg: string }>;
-  suggestions?: Array<{ subscore: string; gap: number; tip: string }>;
-  currency: string;
 }
+  
+//   // Phase 3: radar chart data
+//   radar_data?: Array<{ subject: string; score: number; full: number }>;
+//   metrics: {
+//     income: number;
+//     spend: number;
+//     savings: number;
+//     savings_rate: number;
+//     debt_ratio: number;
+//     spending_ratio: number;
+//     investment_ratio?: number;
+//   };
+//   insights: Array<{ type: string; msg: string }>;
+//   suggestions?: Array<{ subscore: string; gap: number; tip: string }>;
+//   currency: string;
+// }
 
 export interface Goal {
   id: string;
