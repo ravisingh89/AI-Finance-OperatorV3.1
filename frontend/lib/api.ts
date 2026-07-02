@@ -156,7 +156,14 @@ export interface FinancialReport {
 
   // Phase 2
   subscription_intelligence?: SubIntelligence;
-  health_score?: HealthScore;
+  // health_score?: HealthScore;
+  health_score?: {
+    overall_score?: number;
+    radar_data?: Array<{
+      subject: string;
+      score: number;
+      }>;
+  };
   goals?: GoalPlan;
   savings_forecast?: SavingsForecast;
 
