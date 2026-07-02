@@ -156,14 +156,14 @@ export interface FinancialReport {
 
   // Phase 2
   subscription_intelligence?: SubIntelligence;
-  // health_score?: HealthScore;
-  health_score?: {
-    overall_score?: number;
-    radar_data?: Array<{
-      subject: string;
-      score: number;
-      }>;
-  };
+  health_score?: HealthScore;
+  // health_score?: {
+  //   overall_score?: number;
+  //   radar_data?: Array<{
+  //     subject: string;
+  //     score: number;
+  //     }>;
+  // };
   goals?: GoalPlan;
   savings_forecast?: SavingsForecast;
 
@@ -277,16 +277,40 @@ export interface DebtPlan {
 }
 
 export interface HealthScore {
-  overall_score: number;
-  grade: string;
-  label: string;
-  color: string;
-  sub_scores: Record<string, {
+  // overall_score: number;
+  // grade: string;
+  // label: string;
+  // color: string;
+  // sub_scores: Record<string, {
+  //   score: number;
+  //   max: number;
+  //   label: string;
+  //   icon?: string;
+  // }>;
+  overall_score?: number;
+  grade?: string;
+  label?: string;
+  color?: string;
+
+  sub_scores?: {
+    budgeting?: number;
+    savings?: number;
+    debt?: number;
+    investments?: number;
+    subscriptions?: number;
+    waste?: number;
+    discipline?: number;
+  };
+
+  radar_data?: Array<{
+    subject: string;
     score: number;
-    max: number;
-    label: string;
-    icon?: string;
   }>;
+
+  insights?: string[];
+  recommendations?: string[];
+ }
+  
   // Phase 3: radar chart data
   radar_data?: Array<{ subject: string; score: number; full: number }>;
   metrics: {
