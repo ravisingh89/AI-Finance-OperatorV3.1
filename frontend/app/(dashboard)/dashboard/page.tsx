@@ -2,7 +2,7 @@
 import { useReport } from "@/hooks/useReport";
 import { formatCurrency } from "@/lib/utils";
 import type { HealthScore } from "@/lib/api";
-import { HealthScore, SmartAlert, StreakData } from "@/lib/api";
+import { SmartAlert, StreakData } from "@/lib/api";
 import Link from "next/link";
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
