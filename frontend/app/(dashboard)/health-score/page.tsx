@@ -1,5 +1,6 @@
 "use client";
 import { useReport } from "@/hooks/useReport";
+import type { HealthScore } from "@/lib/api";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
@@ -50,7 +51,8 @@ export default function HealthScorePage() {
   const { report, loading, error } = useReport();
   if (loading) return <LoadingSpinner text="Calculating health score…"/>;
   if (error||!report) return <EmptyState/>;
-  const hs = report.health_score;
+  // const hs = report.health_score;
+  const hs: HealthScore = report?.health_score ?? {};
   if (!hs) return <EmptyState message="Health score unavailable. Upload a statement."/>;
 
   const typeBg:Record<string,string>    = {success:"rgba(16,185,129,0.08)",warning:"rgba(245,158,11,0.08)",danger:"rgba(244,63,94,0.08)"};
@@ -121,7 +123,7 @@ export default function HealthScorePage() {
       {(hs.insights?.length ?? 0)>0 && (
         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
           <h2 style={{fontSize:"14px",fontWeight:"600",color:"#0F172A"}}>AI insights</h2>
-          {hs.insights.map((ins:any,i:number)=>(
+          {(hs.insights ?? []).map((ins:any,i:number)=>(
             <div key={i} style={{padding:"14px 16px",borderRadius:"14px",border:`1px solid ${typeColor[ins.type]||"#E2E8F0"}22`,background:typeBg[ins.type]||"#F8FAFC"}}>
               <p style={{fontSize:"13px",fontWeight:"500",color:typeColor[ins.type]||"#374151"}}>
                 {typeIcon[ins.type]||"ℹ️"} {ins.msg}
@@ -135,7 +137,7 @@ export default function HealthScorePage() {
       {(hs.suggestions?.length ?? 0)>0 && (
         <div className="card-premium" style={{padding:"20px"}}>
           <h2 style={{fontSize:"14px",fontWeight:"600",color:"#0F172A",marginBottom:"14px"}}>Top improvements</h2>
-          {hs.suggestions.map((s:any,i:number)=>(
+          {(hs.suggestions ?? []).map((s:any,i:number)=>(
             <div key={i} style={{display:"flex",alignItems:"center",gap:"14px",padding:"10px 0",borderBottom:i<hs.suggestions.length-1?"1px solid #F8FAFC":"none"}}>
               <div style={{width:"32px",height:"32px",borderRadius:"50%",background:"rgba(244,63,94,0.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"13px",fontWeight:"800",color:"#F43F5E"}}>{i+1}</div>
               <div style={{flex:1}}>
