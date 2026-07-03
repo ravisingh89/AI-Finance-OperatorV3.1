@@ -23,18 +23,16 @@ const CAT_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 export default function TransactionsPage() {
+  // ── ALL HOOKS FIRST — before any conditional return ───────────────────────
   const { report, loading, error } = useReport();
-  const [search, setSearch]     = useState("");
-  const [catFilter, setCat]     = useState("all");
-  const [typeFilter, setType]   = useState("all");
-  const [sortBy, setSortBy]     = useState<"date" | "amount">("date");
+  const [search, setSearch]   = useState("");
+  const [catFilter, setCat]   = useState("all");
+  const [typeFilter, setType] = useState("all");
+  const [sortBy, setSortBy]   = useState<"date" | "amount">("date");
 
-  if (loading) return <LoadingSpinner text="Loading transactions…" />;
-  if (error || !report) return <EmptyState />;
-
-  // All data via contract layer
-  const txs = getTransactions(report);
-  const cur = getCurrency(report);
+  // Derive data — safe even when report is null (helpers return [] defaults)
+  const txs = useMemo(() => getTransactions(report), [report]);
+  const cur = useMemo(() => getCurrency(report),     [report]);
 
   const cats = useMemo(() => {
     const set = new Set(txs.map(t => t.category ?? "other"));
@@ -55,8 +53,12 @@ export default function TransactionsPage() {
     [txs, catFilter, typeFilter, search, sortBy]
   );
 
-  const totalSpend  = filtered.filter(t => t.type === "debit") .reduce((s, t) => s + t.amount, 0);
-  const totalCredit = filtered.filter(t => t.type === "credit").reduce((s, t) => s + t.amount, 0);
+  const totalSpend  = useMemo(() => filtered.filter(t => t.type === "debit") .reduce((s, t) => s + t.amount, 0), [filtered]);
+  const totalCredit = useMemo(() => filtered.filter(t => t.type === "credit").reduce((s, t) => s + t.amount, 0), [filtered]);
+
+  // ── Early returns AFTER all hooks ────────────────────────────────────────
+  if (loading) return <LoadingSpinner text="Loading transactions…" />;
+  if (error || !report) return <EmptyState />;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -70,7 +72,7 @@ export default function TransactionsPage() {
       {/* Summary */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
         {[
-          { label: "Filtered spend",  val: formatCurrency(totalSpend,  cur), color: "#F43F5E" },
+          { label: "Filtered spend",  val: formatCurrency(totalSpend, cur),  color: "#F43F5E" },
           { label: "Filtered income", val: formatCurrency(totalCredit, cur), color: "#10B981" },
           { label: "Shown",           val: String(filtered.length),          color: "#3B82F6" },
         ].map(m => (
@@ -85,9 +87,14 @@ export default function TransactionsPage() {
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1, minWidth: "180px" }}>
           <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "14px" }}>🔍</span>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search merchant…"
-            style={{ width: "100%", padding: "9px 12px 9px 34px", borderRadius: "10px", border: "1px solid #E2E8F0", fontSize: "12px", outline: "none", background: "white" }} />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search merchant…"
+            style={{ width: "100%", padding: "9px 12px 9px 34px", borderRadius: "10px", border: "1px solid #E2E8F0", fontSize: "12px", outline: "none", background: "white" }}
+          />
         </div>
+
         <div style={{ display: "flex", background: "#F1F5F9", borderRadius: "10px", padding: "3px" }}>
           {["all", "debit", "credit"].map(t => (
             <button key={t} onClick={() => setType(t)} style={{
@@ -101,8 +108,12 @@ export default function TransactionsPage() {
             </button>
           ))}
         </div>
-        <select value={sortBy} onChange={e => setSortBy(e.target.value as "date" | "amount")}
-          style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid #E2E8F0", fontSize: "12px", background: "white", cursor: "pointer", outline: "none" }}>
+
+        <select
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value as "date" | "amount")}
+          style={{ padding: "8px 12px", borderRadius: "10px", border: "1px solid #E2E8F0", fontSize: "12px", background: "white", cursor: "pointer", outline: "none" }}
+        >
           <option value="date">Latest first</option>
           <option value="amount">Highest amount</option>
         </select>
@@ -117,8 +128,8 @@ export default function TransactionsPage() {
             <button key={c} onClick={() => setCat(c)} style={{
               padding: "4px 12px", borderRadius: "20px", border: "none", cursor: "pointer",
               fontSize: "11px", fontWeight: "600", transition: "all 0.15s",
-              background: active ? style.bg    : "white",
-              color:      active ? style.text  : "#94A3B8",
+              background: active ? style.bg   : "white",
+              color:      active ? style.text : "#94A3B8",
               boxShadow:  active ? `0 0 0 1.5px ${style.text}` : "0 0 0 1px #E2E8F0",
             }}>{c}</button>
           );
@@ -127,7 +138,6 @@ export default function TransactionsPage() {
 
       {/* Table */}
       <div className="card-premium" style={{ padding: "0", overflow: "hidden" }}>
-        {/* Header */}
         <div style={{
           display: "grid", gridTemplateColumns: "110px 1fr 110px 90px 70px",
           gap: "10px", padding: "10px 20px", background: "#F8FAFC",
@@ -136,7 +146,8 @@ export default function TransactionsPage() {
           textTransform: "uppercase", letterSpacing: "0.06em",
         }}>
           <span>Date</span><span>Merchant</span>
-          <span>Category</span><span style={{ textAlign: "right" }}>Amount</span>
+          <span>Category</span>
+          <span style={{ textAlign: "right" }}>Amount</span>
           <span style={{ textAlign: "right" }}>Type</span>
         </div>
 
@@ -147,16 +158,17 @@ export default function TransactionsPage() {
         )}
 
         {filtered.slice(0, 200).map((tx, i) => {
-          const cat   = tx.category ?? "other";
-          const cs    = CAT_COLORS[cat] ?? CAT_COLORS.other;
+          const cat      = tx.category ?? "other";
+          const cs       = CAT_COLORS[cat] ?? CAT_COLORS.other;
           const isCredit = tx.type === "credit";
           return (
-            <div key={i} style={{
-              display: "grid", gridTemplateColumns: "110px 1fr 110px 90px 70px",
-              gap: "10px", padding: "10px 20px", alignItems: "center",
-              borderBottom: i < filtered.length - 1 ? "1px solid #F8FAFC" : "none",
-              transition: "background 0.1s",
-            }}
+            <div key={i}
+              style={{
+                display: "grid", gridTemplateColumns: "110px 1fr 110px 90px 70px",
+                gap: "10px", padding: "10px 20px", alignItems: "center",
+                borderBottom: i < Math.min(filtered.length, 200) - 1 ? "1px solid #F8FAFC" : "none",
+                transition: "background 0.1s",
+              }}
               onMouseEnter={e => (e.currentTarget.style.background = "#F8FAFC")}
               onMouseLeave={e => (e.currentTarget.style.background = "white")}
             >
