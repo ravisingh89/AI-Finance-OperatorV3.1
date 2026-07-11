@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 class SmartAlertsAgent:
     def run(self, transactions: List[dict], subscriptions: List[dict],
             waste_items: List[dict], budget_plan: dict,
-            health_score: dict, currency: str = "AED") -> List[dict]:
+            health_score: dict, currency: str = "AED", anomalies: dict = None) -> List[dict]:
         alerts = []
         debits  = [t for t in transactions if t.get("type") == "debit"]
         credits = [t for t in transactions if t.get("type") == "credit"]
@@ -171,8 +171,20 @@ class SmartAlertsAgent:
                 "color":    "#F43F5E",
             })
 
+
+        # Fold critical anomalies from AnomalyDetector into alert stack
+        if anomalies:
+            sev_map   = {"critical":"high","warning":"medium","info":"info"}
+            color_map = {"critical":"#F43F5E","warning":"#F59E0B","info":"#3B82F6"}
+            for a in (anomalies.get("anomalies") or [])[:3]:
+                alerts.append({"id":a["id"],"type":"anomaly_"+a["type"],
+                    "severity":sev_map.get(a["severity"],"medium"),"icon":"🔍",
+                    "title":a["title"],"body":a["detail"]+" "+a["action"],
+                    "action":"View transactions","action_route":"/insights",
+                    "color":color_map.get(a["severity"],"#F59E0B")})
+
         # Sort: high severity first
         sev_order = {"high": 0, "medium": 1, "info": 2, "success": 3}
         alerts.sort(key=lambda a: sev_order.get(a["severity"], 4))
 
-        return alerts[:8]  # Max 8 alerts
+        return alerts[:10]  # Max 8 alerts

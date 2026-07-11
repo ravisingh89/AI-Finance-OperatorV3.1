@@ -63,6 +63,11 @@ export const api = {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ challenge_id, status }),
     }),
+  // Phase 4
+  checkAlerts:     (t: string) => req<{ new_critical: number; messages: string[] }>("/api/v1/alerts/check", t),
+  getAnomalies:    (t: string) => req<{ anomalies: AnomalyReport | null }>("/api/v1/anomalies", t),
+  getMarketTrends: (t: string) => req<{ market_trends: MarketTrends | null }>("/api/v1/market-trends", t),
+  getInvestPlans:  (t: string) => req<{ investment_plans: InvestmentPlans | null }>("/api/v1/investment-plans", t),
 };
 
 // ── FinancialReport — top-level shape ─────────────────────────────────────────
@@ -87,6 +92,10 @@ export interface FinancialReport {
   goal_actions?:            GoalActions;
   retention?:               Retention;
   report_comparison?:       ReportComparison | null;
+  // Phase 4
+  anomalies?:               AnomalyReport;
+  investment_plans?:        InvestmentPlans;
+  market_trends?:           MarketTrends;
   [key: string]:            unknown;  // safety valve for future fields
 }
 
@@ -284,4 +293,47 @@ export interface ReportComparison {
 export interface HistoryEntry {
   statement_id: string; created_at: string; health_score: number;
   grade: string; total_spend: number; net_savings: number; currency: string;
+}
+
+// ── Phase 4 types ─────────────────────────────────────────────────────────────
+
+export interface InvestmentAllocation {
+  instrument: string; category: string; percent: number; risk: string;
+  expected_return: string; rationale: string; platforms: string[];
+  current_sentiment: "buy" | "hold" | "sell"; disclaimer: boolean;
+  [key: string]: unknown;
+}
+export interface InvestmentPlan {
+  label: string; description?: string; monthly_investment: number;
+  target_5y: number; expected_cagr?: string; allocation: InvestmentAllocation[];
+  [key: string]: unknown;
+}
+export interface InvestmentPlans {
+  risk_profiles: string[]; plans: Record<string, InvestmentPlan>;
+  disclaimer: string; currency: string; generated_for?: string;
+  [key: string]: unknown;
+}
+export interface MarketSection {
+  id: string; name: string; icon: string;
+  sentiment: "bullish" | "bearish" | "neutral";
+  summary: string; ai_view: "buy" | "sell" | "hold"; ai_reasoning: string;
+  timeframes: Record<string, string>; risk_level: string;
+  key_drivers?: string[]; watch_out_for?: string; disclaimer: string;
+  [key: string]: unknown;
+}
+export interface MarketTrends {
+  last_updated: string; currency: string;
+  sections: MarketSection[]; global_disclaimer: string;
+  [key: string]: unknown;
+}
+export interface Anomaly {
+  id: string; type: string; severity: "critical" | "warning" | "info";
+  title: string; detail: string; amount: number; currency: string;
+  action: string; merchant: string | null; detected_at: string;
+  [key: string]: unknown;
+}
+export interface AnomalyReport {
+  anomalies: Anomaly[]; anomaly_count: number;
+  critical_count: number; total_at_risk: number;
+  [key: string]: unknown;
 }

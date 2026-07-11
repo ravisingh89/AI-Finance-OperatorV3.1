@@ -19,6 +19,7 @@ import type {
   SpendingBehaviour, GoalActions, Retention, StreakData,
   SubIntelligence, SavingsForecast, GoalPlan, WasteItem,
   Transaction,
+  AnomalyReport, InvestmentPlans, MarketTrends,
 } from "./api";
 
 // ── Normalised shapes (what pages actually consume) ───────────────────────────
@@ -249,4 +250,27 @@ export function getCategoryBreakdown(report: FinancialReport | null): Record<str
 // ── Currency ──────────────────────────────────────────────────────────────────
 export function getCurrency(report: FinancialReport | null): string {
   return report?.summary.currency ?? "AED";
+}
+
+
+// ── Phase 4 helpers ───────────────────────────────────────────────────────────
+
+export function getAnomalies(report: FinancialReport | null): AnomalyReport {
+  return report?.anomalies ?? {
+    anomalies: [], anomaly_count: 0, critical_count: 0, total_at_risk: 0,
+  };
+}
+
+export function getInvestmentPlans(report: FinancialReport | null): InvestmentPlans {
+  return report?.investment_plans ?? {
+    risk_profiles: ["conservative", "moderate", "aggressive"],
+    plans: {}, disclaimer: "", currency: report?.summary.currency ?? "AED",
+  };
+}
+
+export function getMarketTrends(report: FinancialReport | null): MarketTrends {
+  return report?.market_trends ?? {
+    last_updated: "", currency: report?.summary.currency ?? "AED",
+    sections: [], global_disclaimer: "",
+  };
 }

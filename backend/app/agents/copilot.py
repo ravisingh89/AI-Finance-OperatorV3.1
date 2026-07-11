@@ -6,20 +6,32 @@ from app.db.database import get_copilot_memory, save_copilot_memory
 import json, re
 from datetime import datetime
 
-SYSTEM = """You are FinanceAI Copilot, a world-class personal financial advisor specialising in UAE and India.
+SYSTEM = """You are FinanceAI Copilot, a world-class personal financial advisor for UAE and India.
 
 You have the user's complete financial data AND memory of past conversations below.
-Rules:
-- Answer with SPECIFIC numbers from their data — never generic advice
-- Reference past conversations naturally: "Last time you asked about..."
-- Be warm, direct, and encouraging — like a trusted advisor, not a robot
-- If you spot a pattern across sessions (e.g. they keep asking about debt), proactively address it
-- Max 4 sentences unless detail is requested
-- Never invent numbers not in the data
 
-After answering, on a NEW LINE write exactly:
+CORE RULES:
+- Answer with SPECIFIC numbers from their data — never generic advice
+- Never invent numbers not in the data. If data is missing, say so clearly.
+- Reference past conversations naturally when relevant
+- Be warm, direct, and encouraging — like a trusted CFO, not a robot
+
+FORMATTING RULES (critical — follow exactly):
+- If the user asks for a table, comparison, or breakdown → use a clean markdown table
+- If the user asks for a list → use bullet points
+- If the user asks a conversational question → 2-4 sentences max
+- NEVER repeat the same sentence or phrase twice in a response
+- NEVER trail off or loop — end cleanly after your answer
+- Do not add filler phrases like "I hope this helps" or "Feel free to ask"
+
+ANOMALY DETECTION:
+- Proactively flag if you spot: unusual spike in a category, a new recurring charge, a month where spend > income, duplicate transactions, or a charge that doesn't match the user's normal patterns
+- Only flag anomalies you can justify with numbers from the data
+
+SUGGESTIONS LINE:
+After your answer, on a NEW LINE write exactly:
 SUGGESTIONS: ["question1","question2","question3"]
-These 3 follow-up questions should be highly specific to THIS user's data and the current topic."""
+Questions must be specific to this user's data and the current topic."""
 
 LEARNING_SYSTEM = """You are a financial pattern analyser. Given conversation history, extract 3-5 key learnings about this user's financial concerns, goals, and personality. Return JSON only:
 {
@@ -60,9 +72,11 @@ class CopilotAgent:
         try:
             response = self.groq.client.chat.completions.create(
                 model=self.groq.model,
-                max_tokens=500,
+                max_tokens=800,       # Enough for a full table response
                 messages=messages,
-                temperature=0.3,
+                temperature=0.5,      # Higher = less repetitive, more natural
+                frequency_penalty=0.6, # Directly penalises repeating tokens
+                presence_penalty=0.3,  # Encourages covering new ground
             )
             raw = response.choices[0].message.content
 
@@ -173,6 +187,17 @@ User personality type: {memory.get('personality', 'unknown')}
 Last talked: {memory.get('last_session', 'First session')}
 """
 
+        # Format anomalies for context
+        anomaly_data = report.get("anomalies", {})
+        anomaly_list = anomaly_data.get("anomalies", [])
+        anomaly_ctx  = ""
+        if anomaly_list:
+            critical = [a for a in anomaly_list if a.get("severity") == "critical"]
+            anomaly_ctx = f"""
+SPENDING ANOMALIES DETECTED ({anomaly_data.get('anomaly_count',0)} total, {anomaly_data.get('critical_count',0)} critical):
+{chr(10).join(f"- [{a['severity'].upper()}] {a['title']}: {a['detail']}" for a in anomaly_list[:4])}
+"""
+
         return f"""
 {memory_ctx}
 CURRENT FINANCIAL DATA ({cur}):
@@ -194,6 +219,7 @@ Debt: {report.get('debt_plan',{}).get('recommended_strategy','none')} strategy
 Projected annual savings: {report.get('savings_forecast',{}).get('projections',{}).get('optimised',{}).get('12m',{}).get('etf_sip',0):,.0f} {cur}
 
 Goals: {len(report.get('goals',{}).get('goals',[]))} active goals
+{anomaly_ctx}
 """
 
     def _parse_response(self, raw: str) -> tuple:

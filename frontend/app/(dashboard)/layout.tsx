@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { useReport } from "@/hooks/useReport";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const NAV = [
   { href:"/dashboard",                 label:"Overview",           icon:"📊", group:"main" },
@@ -18,18 +19,25 @@ const NAV = [
   { href:"/savings-forecast",          label:"Savings Forecast",   icon:"📈", group:"insights" },
   { href:"/insights",                  label:"Transactions",       icon:"💡", group:"insights" },
   { href:"/reports-history",           label:"Report History",     icon:"📋", group:"insights" },
+  { href:"/anomalies",                 label:"Anomalies",          icon:"🔍", group:"insights", badge:"anomalies" },
   { href:"/retention",                 label:"Challenges",         icon:"🏆", group:"retention" },
+  { href:"/trends",                    label:"Market Trends",      icon:"📡", group:"phase4" },
+  { href:"/investment-plans",          label:"Investment Plans",   icon:"💎", group:"phase4" },
 ];
 
 const GROUPS: Record<string,string> = {
-  main:"Core", ai:"AI Features", insights:"Insights", retention:"Gamification",
+  main:"Core", ai:"AI Features", insights:"Insights", retention:"Gamification", phase4:"Invest & Markets",
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const path            = usePathname();
   const { report }      = useReport();
   const alertCount      = report?.smart_alerts?.filter((a:any) => a.severity === "high").length || 0;
+  const anomalyCount    = report?.anomalies?.critical_count || 0;
   const streak          = report?.retention?.streak?.current_streak || 0;
+
+  // Initialise notification system — auto-polls every 5 min when permission granted
+  const { permission, requestPermission, supported } = useNotifications();
 
   const grouped = NAV.reduce((acc, item) => {
     if (!acc[item.group]) acc[item.group] = [];
@@ -65,6 +73,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span style={{color:"#10B981",fontSize:"11px",fontWeight:"600"}}>{streak} day streak</span>
             </div>
           )}
+          {supported && permission !== "granted" && (
+            <button onClick={requestPermission} style={{
+              marginTop:"8px",width:"100%",padding:"6px 10px",
+              background:"rgba(59,130,246,0.12)",borderRadius:"8px",
+              border:"1px solid rgba(59,130,246,0.2)",cursor:"pointer",
+              display:"flex",alignItems:"center",gap:"6px",
+            }}>
+              <span style={{fontSize:"12px"}}>🔔</span>
+              <span style={{color:"#3B82F6",fontSize:"10px",fontWeight:"600"}}>Enable alerts</span>
+            </button>
+          )}
+          {supported && permission === "granted" && (
+            <div style={{marginTop:"8px",padding:"5px 10px",
+              background:"rgba(16,185,129,0.08)",borderRadius:"8px",
+              display:"flex",alignItems:"center",gap:"5px"}}>
+              <span style={{fontSize:"11px"}}>🔔</span>
+              <span style={{color:"#10B981",fontSize:"10px"}}>Alerts on</span>
+            </div>
+          )}
         </div>
 
         {/* Nav groups */}
@@ -97,6 +124,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         padding:"1px 5px",borderRadius:"10px",minWidth:"16px",textAlign:"center",
                       }}>{alertCount}</span>
                     )}
+                    {item.badge === "anomalies" && anomalyCount > 0 && (
+                      <span style={{
+                        background:"#F43F5E",color:"white",
+                        fontSize:"9px",fontWeight:"700",
+                        padding:"1px 5px",borderRadius:"10px",minWidth:"16px",textAlign:"center",
+                      }}>{anomalyCount}</span>
+                    )}
                   </Link>
                 );
               })}
@@ -107,7 +141,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* User */}
         <div style={{padding:"12px 14px",borderTop:"1px solid rgba(255,255,255,0.07)"}}>
           <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
             <span style={{color:"#64748B",fontSize:"11px"}}>Account</span>
           </div>
         </div>
